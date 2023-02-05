@@ -13,6 +13,19 @@
 int bits[3] = {0, 0, 0};
 int pins[3] = {RED, YELLOW, GREEN};
 
+void add1tobit(){
+  for(int i = 2; i >=0; i--)
+  {
+    if (bits[i] == 0)
+    {
+      bits[i] = 1;
+      break;
+    }
+    bits[i] = 0;
+  }
+
+}
+
 void setup() {
   Serial.begin(115200);
   ledcSetup(0, 5000, 8); // Main channel
