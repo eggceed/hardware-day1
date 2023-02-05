@@ -30,11 +30,8 @@ void add1tobit(){
 
 void setup() {
   Serial.begin(115200);
-  ledcSetup(0, 5000, 8); // Main channel
-  ledcSetup(1, 5000, 8); // Voided channel
-  ledcAttachPin(RED, 0);
-  ledcAttachPin(YELLOW, 0);
-  ledcAttachPin(GREEN, 0);
+  ledcSetup(1, 5000, 8); // Main channel
+  ledcSetup(0, 5000, 8); // Voided channel
   debouncer.attach(BTN, INPUT_PULLUP);
   debouncer.interval(25);
 }
@@ -43,13 +40,12 @@ void loop() {
   debouncer.update();
   long pwm = map(analogRead(LDR), MIN_LDR, MAX_LDR, 0, 255);
   // Display LED
-  ledcWrite(0, pwm);
+  ledcWrite(1, pwm);
   if (debouncer.fell()) {
     add1tobit();
-  }
-  for (int i = 0; i < 3; i++) {
-    if (!bits[i]) ledcAttachPin(pins[i], 1);
-    else ledcAttachPin(pins[i], 0);
+    for (int i = 0; i < 3; i++) {
+      ledcAttachPin(pins[i], bits[i]);
+    }
   }
   delay(100);
 }
