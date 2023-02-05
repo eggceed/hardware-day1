@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Bounce2.h>
 
 // Define pins
 #define BTN 27
@@ -12,6 +13,7 @@
 
 int bits[3] = {0, 0, 0};
 int pins[3] = {RED, YELLOW, GREEN};
+Bounce debouncer = Bounce();
 
 void add1tobit(){
   for(int i = 2; i >=0; i--)
@@ -33,14 +35,21 @@ void setup() {
   ledcAttachPin(RED, 0);
   ledcAttachPin(YELLOW, 0);
   ledcAttachPin(GREEN, 0);
+  debouncer.attach(BTN, INPUT_PULLUP);
+  debouncer.interval(25);
 }
 
 void loop() {
-  long pwm = map(analogRead(32), 0, 4095, 0, 255);
+  debouncer.update();
+  long pwm = map(analogRead(LDR), MIN_LDR, MAX_LDR, 0, 255);
   // Display LED
   ledcWrite(0, pwm);
+  if (debouncer.fell()) {
+    add1tobit();
+  }
   for (int i = 0; i < 3; i++) {
-    if (!bits[i]) continue; 
+    if (!bits[i]) ledcAttachPin(pins[i], 1);
+    else ledcAttachPin(pins[i], 0);
   }
   delay(100);
 }
